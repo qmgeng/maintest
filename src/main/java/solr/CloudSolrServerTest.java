@@ -1,10 +1,10 @@
 package solr;
 
+import bean.Student;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -92,68 +92,60 @@ public class CloudSolrServerTest {
         cloudSolrServer.shutdown();
     }
 
-    public static void solrOrder() throws SolrServerException {
+    public static void solrOrder(CloudSolrServer solr) throws SolrServerException {
         SolrQuery query = new SolrQuery();
         query.setQuery("*:*");
         query.addSortField("id", SolrQuery.ORDER.asc);
         QueryResponse rsp = solr.query(query);
-        List<App> beans = rsp.getBeans(App.class);
+        List<Student> beans = rsp.getBeans(Student.class);
         for (int i = 0; i < beans.size(); i++) {
             System.out.println(beans.get(i).getName());
         }
     }
 
-    public static void likeQuery() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
+    public static void likeQuery(CloudSolrServer solr) throws SolrServerException {
         SolrQuery query = new SolrQuery();
         query.setQuery("name:*天天*");
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
+        QueryResponse rsp = solr.query(query);
+        List<Student> beans = rsp.getBeans(Student.class);
         for (int i = 0; i < beans.size(); i++) {
             System.out.println(beans.get(i).getName());
         }
     }
 
-    public static void pageQuery() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
+    public static void pageQuery(CloudSolrServer solr) throws SolrServerException {
         SolrQuery query = new SolrQuery();
         query.setQuery("name:*天天*");
         query.setStart(0);
         query.setRows(10);
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
+        QueryResponse rsp = solr.query(query);
+        List<Student> beans = rsp.getBeans(Student.class);
         for (int i = 0; i < beans.size(); i++) {
             System.out.println(beans.get(i).getName());
         }
     }
 
-    public static void multipleQuery1() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
+    public static void multipleQuery1(CloudSolrServer solr) throws SolrServerException {
         SolrQuery query = new SolrQuery();
         query.setQuery("artist:*Tencent* name:*天天*");// 多条件 ||(或)的情况 多条件使用空格分隔
         query.setFields("name", "id_in_appstore", "artist");
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
+        QueryResponse rsp = solr.query(query);
+        List<Student> beans = rsp.getBeans(Student.class);
         for (int i = 0; i < beans.size(); i++) {
             System.out.println(beans.get(i).getName());
-            System.out.println(beans.get(i).getArtist());
-            System.out.println(beans.get(i).getId_in_appstore());
         }
     }
 
     //name包含"天天"且artist包含“Tencent”
-    public static void multipleQuery2() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
+    public static void multipleQuery2(CloudSolrServer solr) throws SolrServerException {
         SolrQuery query = new SolrQuery();
         query.setQuery("name:*天天*");// 多条件使用空格分隔
         query.setFilterQueries("artist:*Tencent*");
         query.setFields("name", "id_in_appstore", "artist");
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
+        QueryResponse rsp = solr.query(query);
+        List<Student> beans = rsp.getBeans(Student.class);
         for (int i = 0; i < beans.size(); i++) {
             System.out.println(beans.get(i).getName());
-            System.out.println(beans.get(i).getArtist());
-            System.out.println(beans.get(i).getId_in_appstore());
         }
     }
 
