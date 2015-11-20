@@ -1,0 +1,1273 @@
+[{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomvideohall2",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.videohall2",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomvideohall1",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.videohall1",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomvideohall1user",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.videohall1.user",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomvideohall2user",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.videohall2.user",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftpt",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftpt",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftgj",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftgj",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftzs",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftzs",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftbg",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftbg",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftleft",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftleft",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomdevote2",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.devote2",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomuserlist",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.userlist",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomdevote1",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.devote1",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoompark",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.park",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomshafa",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.shafa",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomrecommend",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.recommend",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoombroadcast",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.broadcast",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomshafabotton",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.shafa.botton",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomsong",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.song",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomuser",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.user",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_charge_pRoom",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "charge",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_buying_pRoompark",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "buying",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.park",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomchatfly",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.chatfly",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomlogo",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.logo",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomehome",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.home",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerank",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.rank",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomefamily",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.family",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomeshop",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.shop",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomereg",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.reg",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftright",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftright",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomseat",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.seat",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pRoomgiftbotton",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.giftbotton",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomedowm",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.down",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomelogo",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.logo",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomegirlwall",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.girlwall",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomehotlivepic",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.hotlive.pic",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomehotliveword",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.hotlive.word",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomekuaibaopic",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.kuaibao.pic",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomekuaibaoword",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.kuaibao.word",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHometaiwan",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.taiwan",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomegetbobi",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.getbobi",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomeapply",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.apply",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHometop",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.top",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerecommend",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.recommend",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomenew",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.new",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomeleast",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.least",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerecommendpic",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.recommend.pic",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerecommendword",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.recommend.word",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerecommend2pic",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.recommend2.pic",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerecommend2word",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.recommend2.word",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomehotlive",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.hotlive",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomxsd",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.xsd",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomelhsy",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.hsy",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomemmz",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.mmz",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomegjb",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.gjb",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomecgx",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.cgx",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomemoren",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.moren",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "2",
+	"key": "vshow_daily_click_pHomerenshu",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pHome.renshu",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "HOST",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_bobopv_zbjpv_iphone_newsclient",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "action",
+		"value": "enter",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "platform",
+		"value": "iphone_newsclient",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoooldlogin_WY",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.oldlogin.wangyi",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoomoldloginQQ",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.oldlogin.QQ",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoomoldloginWB",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.oldlogin.weibo",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoomnewlogin_WB",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.newlogin.weibo",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoomnewlogin_cancel",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.newlogin.cancel",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoomattention",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.attention",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoonewloginQQ",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.newlogin.QQ",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "WWW",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_click_pRoomnewlogin_WY",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "method",
+		"value": "click",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "keyfrom",
+		"value": "pRoom.newlogin.wangyi",
+		"regx": 0,
+		"mula": 0
+	}]
+},
+{
+	"cla": "HOST",
+	"pro": "vshow",
+	"level": "0",
+	"key": "vshow_daily_bobopv_zbjpv_android_newsclient",
+	"pvOuv": 0,
+	"seg": [{
+		"key": "action",
+		"value": "enter",
+		"regx": 0,
+		"mula": 0
+	},
+	{
+		"key": "platform",
+		"value": "android_newsclient",
+		"regx": 0,
+		"mula": 0
+	}]
+}]
