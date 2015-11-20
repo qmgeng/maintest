@@ -10,6 +10,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
 import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -211,5 +212,165 @@ public class CloudSolrServerTest {
         } catch (SolrServerException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void solrOrder() throws SolrServerException {
+        SolrQuery query = new SolrQuery();
+        query.setQuery("*:*");
+        query.addSortField("id", SolrQuery.ORDER.asc);
+        QueryResponse rsp = solr.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+        }
+    }
+
+    public static void likeQuery() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("name:*天天*");
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+        }
+    }
+    public static void pageQuery() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("name:*天天*");
+        query.setStart(0);
+        query.setRows(10);
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+        }
+    }
+    public static void multipleQuery1() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("artist:*Tencent* name:*天天*");// 多条件 ||(或)的情况 多条件使用空格分隔
+        query.setFields("name", "id_in_appstore", "artist");
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+            System.out.println(beans.get(i).getArtist());
+            System.out.println(beans.get(i).getId_in_appstore());
+        }
+    }
+
+    //name包含"天天"且artist包含“Tencent”
+    public static void multipleQuery2() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("name:*天天*");// 多条件使用空格分隔
+        query.setFilterQueries("artist:*Tencent*");
+        query.setFields("name", "id_in_appstore", "artist");
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+            System.out.println(beans.get(i).getArtist());
+            System.out.println(beans.get(i).getId_in_appstore());
+        }
+    }
+
+
+//    {
+//        "id": 310683,
+//            "name": "A Blobber Popper",
+//            "type_name": "家庭游戏",
+//            "app_updated_time": "2013-10-16T16:00:00Z",
+//            "id_in_data": 718985737,
+//            "artist_id": 628,
+//            "artist": "Timo Lehtikevari",
+//            "type_id": 33,
+//            "img_hit": "http://a1227.phobos.apple.com/us/r30/Purple4/v4/45/93/47/4593474d-9d07-f59b-01e2-8788bee510eb/mzl.llswugwf.75x75-65.png",
+//            "is_free": true,
+//            "_version_": 1453475483495694300
+//    }
+
+    /**
+     * 查询总入口
+     *
+     * @param fields
+     *            查询字段
+     * @param values
+     *            查询key值 field:key
+     * @param start
+     *            起始位置
+     * @param count
+     *            读取总数
+     * @param sortfields
+     *            排序字段
+     * @param flags
+     *            排序标志
+     * @param fecteField 分面统计字段
+     * @return QueryResponse
+     * @author:Jonathan.Wei
+     * @date:2013-11-27
+     */
+    public static QueryResponse search(SolrServer solr,String[] fields, String[] values,
+                                       String[] fqs, String[] fqValues, int start, int count,
+                                       String[] sortfields, Boolean[] flags,String[]fecteField) {
+        // 检测输入是否合法
+        if (null == fields || null == values || fields.length != values.length) {
+            return null;
+        }
+        if (null == sortfields || null == flags
+                || sortfields.length != flags.length) {
+            return null;
+        }
+        SolrQuery query = null;
+        try {
+            // 初始化查询对象
+            query = new SolrQuery();
+            query.setQuery(fields[0] + ":" + values[0]);
+            // 设置起始位置与返回结果数
+            if (start!=0) {
+                query.setStart(start);
+            }
+            if (count!=0) {
+                query.setRows(count);
+            }
+            if (null!=fecteField) {
+                query.setFacet(true);
+                query.setFacetLimit(20);
+                query.setFacetMinCount(1);
+                query.addFacetField(fecteField);
+            }
+            boolean isFq = false;
+            if (fqs != null && fqs.length > 0) {
+                if (fqs.length == fqValues.length) {
+                    isFq = true;
+                }
+            }
+            if (isFq) {
+                for (int i = 0; i < flags.length; i++) {
+                    String fq = fqs[i] + ":" + fqValues[i];
+                    query.setFilterQueries(fq);
+                }
+            }
+            // 设置排序
+            for (int i = 0; i < sortfields.length; i++) {
+                if (flags[i]) {
+                    query.addSortField(sortfields[i], SolrQuery.ORDER.asc);
+                } else {
+                    query.addSortField(sortfields[i], SolrQuery.ORDER.desc);
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        QueryResponse rsp = null;
+        try {
+            rsp = solr.query(query);
+        } catch (Exception e) {
+            return null;
+        }
+        // 返回查询结果
+        return rsp;
     }
 }
