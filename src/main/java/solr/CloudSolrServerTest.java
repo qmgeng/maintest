@@ -1,15 +1,9 @@
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+package solr;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.client.solrj.impl.ConcurrentUpdateSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -20,6 +14,12 @@ import org.apache.solr.common.cloud.ZkStateReader;
 import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.servlet.SolrRequestParsers;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class CloudSolrServerTest {
     private static CloudSolrServer cloudSolrServer;
@@ -38,6 +38,199 @@ public class CloudSolrServerTest {
             }
         }
         return cloudSolrServer;
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        final String zkHost = "123.58.179.51:2181,123.58.179.52:2181,123.58.179.53:2181/solr";
+        final String defaultCollection = "collection1";
+        final int zkClientTimeout = 20000;
+        final int zkConnectTimeout = 1000;
+        CloudSolrServer cloudSolrServer = getCloudSolrServer(zkHost);
+        System.out.println("The Cloud SolrServer Instance has benn created!");
+        cloudSolrServer.setDefaultCollection(defaultCollection);
+        cloudSolrServer.setZkClientTimeout(zkClientTimeout);
+        cloudSolrServer.setZkConnectTimeout(zkConnectTimeout);
+        cloudSolrServer.connect();
+        System.out.println("The cloud Server has been connected !!!!");
+        ZkStateReader zkStateReader = cloudSolrServer.getZkStateReader();
+        ClusterState cloudState = zkStateReader.getClusterState();
+        System.out.println(cloudState);
+        // 测试实例！
+        CloudSolrServerTest test = new CloudSolrServerTest();
+        System.out.println("测试添加index！！！");
+        test.addIndex(cloudSolrServer);
+        System.out.println("测试查询query！！！！");
+        test.search(cloudSolrServer, "id:*");
+        System.out.println("测试删除！！！！");
+        test.deleteAllIndex(cloudSolrServer);
+        System.out.println("删除所有文档后的查询结果：");
+        test.search(cloudSolrServer, "*:*");
+//    long s1 = System.currentTimeMillis();
+//    test.addRandomIndex(cloudSolrServer);
+//    long s2 = System.currentTimeMillis();
+//    System.out.println(s2 - s1);
+
+
+        test.search(cloudSolrServer, "id:9999");
+
+
+        // 查询语法
+        SolrQuery q = new SolrQuery();
+        // 基本的字段查询
+        q.setQuery("TITLE:中国人");
+        // 多字段或关系 TITLE:("中国人" AND "美国人" AND "英国人")
+        // 多字段不包含的关系 TITLE:(* NOT "上网费用高" NOT "宽带收费不合理" )
+        // 查询一个范围 BETWEEN 适用于数字和日期类型 NUM:[-90 TO 360 ] OR CREATED_AT:[" + date1 + " TO " + date2 + "]
+        // 日期转换 不是惯用的 yyyy-MM-dd HH:mm:ss
+        //String date1 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(c.getStartTime().getTime());
+
+
+        // release the resource
+        cloudSolrServer.shutdown();
+    }
+
+    public static void solrOrder() throws SolrServerException {
+        SolrQuery query = new SolrQuery();
+        query.setQuery("*:*");
+        query.addSortField("id", SolrQuery.ORDER.asc);
+        QueryResponse rsp = solr.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+        }
+    }
+
+    public static void likeQuery() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("name:*天天*");
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+        }
+    }
+
+    public static void pageQuery() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("name:*天天*");
+        query.setStart(0);
+        query.setRows(10);
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+        }
+    }
+
+    public static void multipleQuery1() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("artist:*Tencent* name:*天天*");// 多条件 ||(或)的情况 多条件使用空格分隔
+        query.setFields("name", "id_in_appstore", "artist");
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+            System.out.println(beans.get(i).getArtist());
+            System.out.println(beans.get(i).getId_in_appstore());
+        }
+    }
+
+    //name包含"天天"且artist包含“Tencent”
+    public static void multipleQuery2() throws SolrServerException {
+        solrCore = new HttpSolrServer(url);
+        SolrQuery query = new SolrQuery();
+        query.setQuery("name:*天天*");// 多条件使用空格分隔
+        query.setFilterQueries("artist:*Tencent*");
+        query.setFields("name", "id_in_appstore", "artist");
+        QueryResponse rsp = solrCore.query(query);
+        List<App> beans = rsp.getBeans(App.class);
+        for (int i = 0; i < beans.size(); i++) {
+            System.out.println(beans.get(i).getName());
+            System.out.println(beans.get(i).getArtist());
+            System.out.println(beans.get(i).getId_in_appstore());
+        }
+    }
+
+    /**
+     * 查询总入口
+     *
+     * @param fields     查询字段
+     * @param values     查询key值 field:key
+     * @param start      起始位置
+     * @param count      读取总数
+     * @param sortfields 排序字段
+     * @param flags      排序标志
+     * @param fecteField 分面统计字段
+     * @return QueryResponse
+     * @author:Jonathan.Wei
+     * @date:2013-11-27
+     */
+    public static QueryResponse search(SolrServer solr, String[] fields, String[] values,
+                                       String[] fqs, String[] fqValues, int start, int count,
+                                       String[] sortfields, Boolean[] flags, String[] fecteField) {
+        // 检测输入是否合法
+        if (null == fields || null == values || fields.length != values.length) {
+            return null;
+        }
+        if (null == sortfields || null == flags
+                || sortfields.length != flags.length) {
+            return null;
+        }
+        SolrQuery query = null;
+        try {
+            // 初始化查询对象
+            query = new SolrQuery();
+            query.setQuery(fields[0] + ":" + values[0]);
+            // 设置起始位置与返回结果数
+            if (start != 0) {
+                query.setStart(start);
+            }
+            if (count != 0) {
+                query.setRows(count);
+            }
+            if (null != fecteField) {
+                query.setFacet(true);
+                query.setFacetLimit(20);
+                query.setFacetMinCount(1);
+                query.addFacetField(fecteField);
+            }
+            boolean isFq = false;
+            if (fqs != null && fqs.length > 0) {
+                if (fqs.length == fqValues.length) {
+                    isFq = true;
+                }
+            }
+            if (isFq) {
+                for (int i = 0; i < flags.length; i++) {
+                    String fq = fqs[i] + ":" + fqValues[i];
+                    query.setFilterQueries(fq);
+                }
+            }
+            // 设置排序
+            for (int i = 0; i < sortfields.length; i++) {
+                if (flags[i]) {
+                    query.addSortField(sortfields[i], SolrQuery.ORDER.asc);
+                } else {
+                    query.addSortField(sortfields[i], SolrQuery.ORDER.desc);
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        QueryResponse rsp = null;
+        try {
+            rsp = solr.query(query);
+        } catch (Exception e) {
+            return null;
+        }
+        // 返回查询结果
+        return rsp;
     }
 
     private void addIndex(SolrServer solrServer) {
@@ -132,59 +325,6 @@ public class CloudSolrServerTest {
         }
     }
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        final String zkHost = "123.58.179.51:2181,123.58.179.52:2181,123.58.179.53:2181/solr";
-        final String defaultCollection = "collection1";
-        final int zkClientTimeout = 20000;
-        final int zkConnectTimeout = 1000;
-        CloudSolrServer cloudSolrServer = getCloudSolrServer(zkHost);
-        System.out.println("The Cloud SolrServer Instance has benn created!");
-        cloudSolrServer.setDefaultCollection(defaultCollection);
-        cloudSolrServer.setZkClientTimeout(zkClientTimeout);
-        cloudSolrServer.setZkConnectTimeout(zkConnectTimeout);
-        cloudSolrServer.connect();
-        System.out.println("The cloud Server has been connected !!!!");
-        ZkStateReader zkStateReader = cloudSolrServer.getZkStateReader();
-        ClusterState cloudState = zkStateReader.getClusterState();
-        System.out.println(cloudState);
-        // 测试实例！
-        CloudSolrServerTest test = new CloudSolrServerTest();
-        System.out.println("测试添加index！！！");
-        test.addIndex(cloudSolrServer);
-        System.out.println("测试查询query！！！！");
-        test.search(cloudSolrServer, "id:*");
-        System.out.println("测试删除！！！！");
-        test.deleteAllIndex(cloudSolrServer);
-        System.out.println("删除所有文档后的查询结果：");
-        test.search(cloudSolrServer, "*:*");
-//    long s1 = System.currentTimeMillis();
-//    test.addRandomIndex(cloudSolrServer);
-//    long s2 = System.currentTimeMillis();
-//    System.out.println(s2 - s1);
-
-
-        test.search(cloudSolrServer, "id:9999");
-
-
-        // 查询语法
-        SolrQuery q = new SolrQuery();
-        // 基本的字段查询
-        q.setQuery("TITLE:中国人");
-        // 多字段或关系 TITLE:("中国人" AND "美国人" AND "英国人")
-        // 多字段不包含的关系 TITLE:(* NOT "上网费用高" NOT "宽带收费不合理" )
-        // 查询一个范围 BETWEEN 适用于数字和日期类型 NUM:[-90 TO 360 ] OR CREATED_AT:[" + date1 + " TO " + date2 + "]
-        // 日期转换 不是惯用的 yyyy-MM-dd HH:mm:ss
-        //String date1 = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(c.getStartTime().getTime());
-
-
-        // release the resource
-        cloudSolrServer.shutdown();
-    }
-
-
     public void query01(SolrServer solr, String queryString) {
         SolrParams solrParams = SolrRequestParsers
                 .parseQueryString(queryString);
@@ -196,84 +336,6 @@ public class CloudSolrServerTest {
             rsp.getResults();
         } catch (SolrServerException e) {
             e.printStackTrace();
-        }
-    }
-
-
-    public void query02(SolrServer solr, String queryString) {
-        ModifiableSolrParams solrParams = new ModifiableSolrParams();
-        solrParams.add("q", queryString);
-        solrParams.add("start", "0");
-        solrParams.add("rows", "10");
-        try {
-            QueryResponse rsp = solr.query(solrParams);
-            rsp.getResults();
-
-        } catch (SolrServerException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void solrOrder() throws SolrServerException {
-        SolrQuery query = new SolrQuery();
-        query.setQuery("*:*");
-        query.addSortField("id", SolrQuery.ORDER.asc);
-        QueryResponse rsp = solr.query(query);
-        List<App> beans = rsp.getBeans(App.class);
-        for (int i = 0; i < beans.size(); i++) {
-            System.out.println(beans.get(i).getName());
-        }
-    }
-
-    public static void likeQuery() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
-        SolrQuery query = new SolrQuery();
-        query.setQuery("name:*天天*");
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
-        for (int i = 0; i < beans.size(); i++) {
-            System.out.println(beans.get(i).getName());
-        }
-    }
-    public static void pageQuery() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
-        SolrQuery query = new SolrQuery();
-        query.setQuery("name:*天天*");
-        query.setStart(0);
-        query.setRows(10);
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
-        for (int i = 0; i < beans.size(); i++) {
-            System.out.println(beans.get(i).getName());
-        }
-    }
-    public static void multipleQuery1() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
-        SolrQuery query = new SolrQuery();
-        query.setQuery("artist:*Tencent* name:*天天*");// 多条件 ||(或)的情况 多条件使用空格分隔
-        query.setFields("name", "id_in_appstore", "artist");
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
-        for (int i = 0; i < beans.size(); i++) {
-            System.out.println(beans.get(i).getName());
-            System.out.println(beans.get(i).getArtist());
-            System.out.println(beans.get(i).getId_in_appstore());
-        }
-    }
-
-    //name包含"天天"且artist包含“Tencent”
-    public static void multipleQuery2() throws SolrServerException {
-        solrCore = new HttpSolrServer(url);
-        SolrQuery query = new SolrQuery();
-        query.setQuery("name:*天天*");// 多条件使用空格分隔
-        query.setFilterQueries("artist:*Tencent*");
-        query.setFields("name", "id_in_appstore", "artist");
-        QueryResponse rsp = solrCore.query(query);
-        List<App> beans = rsp.getBeans(App.class);
-        for (int i = 0; i < beans.size(); i++) {
-            System.out.println(beans.get(i).getName());
-            System.out.println(beans.get(i).getArtist());
-            System.out.println(beans.get(i).getId_in_appstore());
         }
     }
 
@@ -292,85 +354,17 @@ public class CloudSolrServerTest {
 //            "_version_": 1453475483495694300
 //    }
 
-    /**
-     * 查询总入口
-     *
-     * @param fields
-     *            查询字段
-     * @param values
-     *            查询key值 field:key
-     * @param start
-     *            起始位置
-     * @param count
-     *            读取总数
-     * @param sortfields
-     *            排序字段
-     * @param flags
-     *            排序标志
-     * @param fecteField 分面统计字段
-     * @return QueryResponse
-     * @author:Jonathan.Wei
-     * @date:2013-11-27
-     */
-    public static QueryResponse search(SolrServer solr,String[] fields, String[] values,
-                                       String[] fqs, String[] fqValues, int start, int count,
-                                       String[] sortfields, Boolean[] flags,String[]fecteField) {
-        // 检测输入是否合法
-        if (null == fields || null == values || fields.length != values.length) {
-            return null;
-        }
-        if (null == sortfields || null == flags
-                || sortfields.length != flags.length) {
-            return null;
-        }
-        SolrQuery query = null;
+    public void query02(SolrServer solr, String queryString) {
+        ModifiableSolrParams solrParams = new ModifiableSolrParams();
+        solrParams.add("q", queryString);
+        solrParams.add("start", "0");
+        solrParams.add("rows", "10");
         try {
-            // 初始化查询对象
-            query = new SolrQuery();
-            query.setQuery(fields[0] + ":" + values[0]);
-            // 设置起始位置与返回结果数
-            if (start!=0) {
-                query.setStart(start);
-            }
-            if (count!=0) {
-                query.setRows(count);
-            }
-            if (null!=fecteField) {
-                query.setFacet(true);
-                query.setFacetLimit(20);
-                query.setFacetMinCount(1);
-                query.addFacetField(fecteField);
-            }
-            boolean isFq = false;
-            if (fqs != null && fqs.length > 0) {
-                if (fqs.length == fqValues.length) {
-                    isFq = true;
-                }
-            }
-            if (isFq) {
-                for (int i = 0; i < flags.length; i++) {
-                    String fq = fqs[i] + ":" + fqValues[i];
-                    query.setFilterQueries(fq);
-                }
-            }
-            // 设置排序
-            for (int i = 0; i < sortfields.length; i++) {
-                if (flags[i]) {
-                    query.addSortField(sortfields[i], SolrQuery.ORDER.asc);
-                } else {
-                    query.addSortField(sortfields[i], SolrQuery.ORDER.desc);
-                }
-            }
-        } catch (Exception e) {
-        }
+            QueryResponse rsp = solr.query(solrParams);
+            rsp.getResults();
 
-        QueryResponse rsp = null;
-        try {
-            rsp = solr.query(query);
-        } catch (Exception e) {
-            return null;
+        } catch (SolrServerException e) {
+            e.printStackTrace();
         }
-        // 返回查询结果
-        return rsp;
     }
 }
