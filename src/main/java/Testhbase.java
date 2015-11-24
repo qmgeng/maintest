@@ -43,9 +43,9 @@ public class Testhbase {
 
 
         // 测试get
-//        HTable table = new HTable(conf, "datacube:kpidata");
+        HTable table2 = new HTable(conf, "datacube:kpidata");
         Get get = new Get("pro1_url1_20151101".getBytes());
-        Result rs = table.get(get);
+        Result rs = table2.get(get);
         for (KeyValue kv : rs.raw()) {
             System.out.print(new String(kv.getRow()) + " ");
             System.out.print(new String(kv.getFamily()) + ":");
@@ -53,7 +53,7 @@ public class Testhbase {
             System.out.print(kv.getTimestamp() + " ");
             System.out.println(new String(kv.getValue()));
         }
-        table.close();
+        table2.close();
 
         // // 测试create
         // String newTableName = "sentry6";
