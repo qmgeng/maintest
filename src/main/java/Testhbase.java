@@ -1,9 +1,8 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.security.UserGroupInformation;
 
 import java.io.IOException;
@@ -33,20 +32,19 @@ public class Testhbase {
         // 定时调用更新kerberos（10小时过期），推荐用守护线程定期调用
         UserGroupInformation.getCurrentUser().reloginFromKeytab();
 
-        // HTablePool pool = new HTablePool(conf, 10);
-        // HTableInterface table = pool.getTable("datacube:testdchtandroidchannelremain");
-        // Put put = new Put(Bytes.toBytes("testkey001"));
-        // // 参数出分别：列族、列、值
-        // put.add(Bytes.toBytes("value"), Bytes.toBytes("testk1"), Bytes.toBytes("testv1"));
-        //
-        // table.put(put);
-        // table.close();
+         HTablePool pool = new HTablePool(conf, 10);
+         HTableInterface table = pool.getTable("datacube:kpidata");
+         Put put = new Put(Bytes.toBytes("pro1_url1_20151101"));
+         // 参数出分别：列族、列、值
+         put.add(Bytes.toBytes("values"), Bytes.toBytes("pv"), Bytes.toBytes("1234567"));
+
+         table.put(put);
+         table.close();
+
 
         // 测试get
-        HTable table = new HTable(conf, "datacube:onlinedchtuserremainiphone");
-        System.out.println(table.getName().getNameAsString());
-        System.out.println(table.getEndKeys().toString());
-        Get get = new Get("tongbutui_huatian_M20150819".getBytes());
+//        HTable table = new HTable(conf, "datacube:kpidata");
+        Get get = new Get("pro1_url1_20151101".getBytes());
         Result rs = table.get(get);
         for (KeyValue kv : rs.raw()) {
             System.out.print(new String(kv.getRow()) + " ");
