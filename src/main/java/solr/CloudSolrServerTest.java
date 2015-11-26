@@ -64,10 +64,12 @@ public class CloudSolrServerTest {
         test.addIndex(cloudSolrServer);
         System.out.println("测试查询query！！！！");
         test.search(cloudSolrServer, "id:*");
-        System.out.println("测试删除！！！！");
-        test.deleteAllIndex(cloudSolrServer);
-        System.out.println("删除所有文档后的查询结果：");
-        test.search(cloudSolrServer, "*:*");
+
+//        System.out.println("测试删除！！！！");
+//        test.deleteAllIndex(cloudSolrServer);
+//        System.out.println("删除所有文档后的查询结果：");
+//        test.search(cloudSolrServer, "*:*");
+
 //    long s1 = System.currentTimeMillis();
 //    test.addRandomIndex(cloudSolrServer);
 //    long s2 = System.currentTimeMillis();

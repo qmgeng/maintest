@@ -18,6 +18,14 @@
             <id>nexus-osc</id>
             <url>http://maven.oschina.net/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>cdh.repo</id>
+            <url>https://repository.cloudera.com/artifactory/cloudera-repos</url>
+            <name>Cloudera Repositories</name>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <build>
@@ -208,5 +216,26 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.36</version>
         </dependency>
+
+        <!-- morphline -->
+        <!--
+        <dependency>
+            <groupId>org.kitesdk</groupId>
+            <artifactId>kite-morphlines-all</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.kitesdk</groupId>
+            <artifactId>kite-morphlines-core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kitesdk</groupId>
+            <artifactId>kite-morphlines-json</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
     </dependencies>
 </project>
