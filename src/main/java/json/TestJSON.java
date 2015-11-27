@@ -1,3 +1,6 @@
+package json;
+
+import netease.ReaperUrl;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParseException;
@@ -34,7 +37,7 @@ public class TestJSON {
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 
-        File fl = new File("C:\\ReaperUrl.json");
+        File fl = new File("C:\\netease.ReaperUrl.json");
 
         TypeReference<List<ReaperUrl>> listReaperUrl = new TypeReference<List<ReaperUrl>>() {
         };

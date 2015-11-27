@@ -1,3 +1,5 @@
+package netease;
+
 import java.util.Date;
 
 public class KpiData {

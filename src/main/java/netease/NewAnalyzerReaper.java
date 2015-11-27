@@ -1,3 +1,5 @@
+package netease;
+
 import com.netease.jurassic.analyzer.client.ResultServerProtocol;
 import com.netease.jurassic.analyzer.data.StatisticResultWritable;
 import org.apache.hadoop.conf.Configuration;

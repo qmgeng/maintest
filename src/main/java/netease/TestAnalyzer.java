@@ -1,3 +1,5 @@
+package netease;
+
 import com.netease.jurassic.analyzer.client.ResultServerProtocol;
 import com.netease.jurassic.analyzer.data.StatisticResultWritable;
 import org.apache.hadoop.conf.Configuration;
@@ -58,7 +60,7 @@ public class TestAnalyzer {
             // 读取json
             List<ReaperUrl> reaperUrls = new ArrayList<ReaperUrl>();
             ObjectMapper mapper = new ObjectMapper();
-            File fl = new File("/home/weblog/cube_monitor/source/datacube/ReaperUrl.json");
+            File fl = new File("/home/weblog/cube_monitor/source/datacube/netease.ReaperUrl.json");
             TypeReference<List<ReaperUrl>> listReaperUrl = new TypeReference<List<ReaperUrl>>() {
             };
             reaperUrls = mapper.readValue(fl, listReaperUrl);
