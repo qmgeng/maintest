@@ -1,199 +1,299 @@
 package hbase;
 
-import bean.Student;
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.Filter;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
+import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.security.UserGroupInformation;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Map;
 
-/**
- * Created by qmgeng on 2015/11/11.
- */
-public class HBaseUtils {
-    // è‡ªåŠ¨åŠ è½½hbase-site.xml
+public class HbaseUtils {
+    private static Configuration config = null;
+    private static HTablePool tp = null;
+    // ×Ô¶¯¼ÓÔØhbase-site.xml
     static Configuration conf = HBaseConfiguration.create();
 
     static {
-        // kerberosçš„é…ç½®æ–‡ä»¶çš„ä½ç½®,windowsä¸‹å«krb5.ini,linuxä¸‹å«krb5.conf
-        //System.setProperty("java.security.krb5.conf", "C:\\Windows\\krb5.ini");
-
-        // winä¸‹çš„é…ç½®ï¼Œé˜²æ­¢å‡ºç°winutil.exeçš„å¼‚å¸¸ï¼Œhadoop.home.dir\binç›®å½•ä¸‹è¦æœ‰ç¼–è¯‘å¥½çš„exe
-        // ä¸é…è¿™ä¸ªå±æ€§ä¹Ÿæ²¡å½±å“ï¼Œå°±æ˜¯ä¼šæœ‰ä¸ªå¼‚å¸¸ï¼Œä¸å½±å“è¿è¡Œ
-        //System.setProperty("hadoop.home.dir", "D:\\hadoop-2.5.2");
-
-        // conf.set("hbase.zookeeper.quorum", "hbase0.photo.163.org,hbase1.photo.163.org,hbase2.photo.163.org");
-        // conf.set("hbase.zookeeper.property.clientPort", "2181");
-
-        // ä½¿ç”¨keytabç™»é™†
+        // Ê¹ÓÃkeytabµÇÂ½
         UserGroupInformation.setConfiguration(conf);
         try {
             UserGroupInformation.loginUserFromKeytab("weblog/dev@HADOOP.HZ.NETEASE.COM", "/home/weblog/weblog.keytab");
-            // å®šæ—¶è°ƒç”¨æ›´æ–°kerberosï¼ˆ10å°æ—¶è¿‡æœŸï¼‰ï¼Œæ¨èç”¨å®ˆæŠ¤çº¿ç¨‹å®šæœŸè°ƒç”¨
+            // ¶¨Ê±µ÷ÓÃ¸üĞÂkerberos£¨10Ğ¡Ê±¹ıÆÚ£©£¬ÍÆ¼öÓÃÊØ»¤Ïß³Ì¶¨ÆÚµ÷ÓÃ
             UserGroupInformation.getCurrentUser().reloginFromKeytab();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    private ExecutorService pool = Executors.newFixedThreadPool(10);    // è¿™é‡Œåˆ›å»ºäº†10ä¸ª Active RPC Calls
-
     /*
-    * æ ¹æ®rwokeyæŸ¥è¯¢
-    *
-    * @rowKey rowKey
-    *
-    * @tableName è¡¨å
-    */
-    public static Result getResult(String tableName, String rowKey)
+     * »ñÈ¡hbaseµÄ±í
+     */
+    public static HTableInterface getTable(String tableName) {
+
+        if (StringUtils.isEmpty(tableName))
+            return null;
+
+        return tp.getTable(getBytes(tableName));
+    }
+
+    /* ×ª»»byteÊı×é */
+    public static byte[] getBytes(String str) {
+        if (str == null)
+            str = "";
+
+        return Bytes.toBytes(str);
+    }
+
+    /**
+     * ²éÑ¯Êı¾İ
+     */
+    public static TBData getDataMap(String tableName, String startRow,
+                                    String stopRow, Integer currentPage, Integer pageSize)
             throws IOException {
-        Get get = new Get(Bytes.toBytes(rowKey));
-        HTable table = new HTable(conf, Bytes.toBytes(tableName));// è·å–è¡¨
-        Result result = table.get(get);
-        for (KeyValue kv : result.list()) {
-            System.out.println("family:" + Bytes.toString(kv.getFamily()));
-            System.out
-                    .println("qualifier:" + Bytes.toString(kv.getQualifier()));
-            System.out.println("value:" + Bytes.toString(kv.getValue()));
-            System.out.println("Timestamp:" + kv.getTimestamp());
-            System.out.println("-------------------------------------------");
-        }
-        return result;
-    }
+        List<Map<String, String>> mapList = null;
+        mapList = new LinkedList<Map<String, String>>();
 
-    /*
-    * éå†æŸ¥è¯¢hbaseè¡¨
-    *
-    * @tableName è¡¨å
-    */
-    public static void getResultScann(String tableName, String start_rowkey,
-                                      String stop_rowkey) throws IOException {
-        Scan scan = new Scan();
-        scan.setStartRow(Bytes.toBytes(start_rowkey));
-        scan.setStopRow(Bytes.toBytes(stop_rowkey));
-        ResultScanner rs = null;
-        HTable table = new HTable(conf, Bytes.toBytes(tableName));
+        ResultScanner scanner = null;
+        // Îª·ÖÒ³´´½¨µÄ·â×°Àà¶ÔÏó£¬ÏÂÃæÓĞ¸ø³ö¾ßÌåÊôĞÔ
+        TBData tbData = null;
         try {
-            rs = table.getScanner(scan);
-            for (Result r : rs) {
-                for (KeyValue kv : r.list()) {
-                    System.out.println("row:" + Bytes.toString(kv.getRow()));
-                    System.out.println("family:"
-                            + Bytes.toString(kv.getFamily()));
-                    System.out.println("qualifier:"
-                            + Bytes.toString(kv.getQualifier()));
-                    System.out
-                            .println("value:" + Bytes.toString(kv.getValue()));
-                    System.out.println("timestamp:" + kv.getTimestamp());
-                    System.out
-                            .println("-------------------------------------------");
+            // »ñÈ¡×î´ó·µ»Ø½á¹ûÊıÁ¿
+            if (pageSize == null || pageSize == 0L)
+                pageSize = 100;
+
+            if (currentPage == null || currentPage == 0)
+                currentPage = 1;
+
+            // ¼ÆËãÆğÊ¼Ò³ºÍ½áÊøÒ³
+            Integer firstPage = (currentPage - 1) * pageSize;
+
+            Integer endPage = firstPage + pageSize;
+
+            // ´Ó±í³ØÖĞÈ¡³öHBASE±í¶ÔÏó
+            HTableInterface table = getTable(tableName);
+            // »ñÈ¡É¸Ñ¡¶ÔÏó
+            Scan scan = getScan(startRow, stopRow);
+            // ¸øÉ¸Ñ¡¶ÔÏó·ÅÈë¹ıÂËÆ÷(true±êÊ¶·ÖÒ³,¾ßÌå·½·¨ÔÚÏÂÃæ)
+            scan.setFilter(packageFilters(true));
+            // »º´æ1000ÌõÊı¾İ
+            scan.setCaching(1000);
+            scan.setCacheBlocks(false);
+            scanner = table.getScanner(scan);
+            int i = 0;
+            List<byte[]> rowList = new LinkedList<byte[]>();
+            // ±éÀúÉ¨ÃèÆ÷¶ÔÏó£¬ ²¢½«ĞèÒª²éÑ¯³öÀ´µÄÊı¾İrow keyÈ¡³ö
+            for (Result result : scanner) {
+                String row = toStr(result.getRow());
+                if (i >= firstPage && i < endPage) {
+                    rowList.add(getBytes(row));
                 }
+                i++;
             }
-        } finally {
-            rs.close();
-        }
-    }
 
-    /*
-    * æŸ¥è¯¢è¡¨ä¸­çš„æŸä¸€åˆ—
-    *
-    * @tableName è¡¨å
-    *
-    * @rowKey rowKey
-    */
-    public static void getResultByColumn(String tableName, String rowKey,
-                                         String familyName, String columnName) throws IOException {
-        HTable table = new HTable(conf, Bytes.toBytes(tableName));
-        Get get = new Get(Bytes.toBytes(rowKey));
-        get.addColumn(Bytes.toBytes(familyName), Bytes.toBytes(columnName)); // è·å–æŒ‡å®šåˆ—æ—å’Œåˆ—ä¿®é¥°ç¬¦å¯¹åº”çš„åˆ—
-        Result result = table.get(get);
-        for (KeyValue kv : result.list()) {
-            System.out.println("family:" + Bytes.toString(kv.getFamily()));
-            System.out
-                    .println("qualifier:" + Bytes.toString(kv.getQualifier()));
-            System.out.println("value:" + Bytes.toString(kv.getValue()));
-            System.out.println("Timestamp:" + kv.getTimestamp());
-            System.out.println("-------------------------------------------");
-        }
-    }
-
-    /*
-    * æŸ¥è¯¢æŸåˆ—æ•°æ®çš„å¤šä¸ªç‰ˆæœ¬
-    *
-    * @tableName è¡¨å
-    *
-    * @rowKey rowKey
-    *
-    * @familyName åˆ—æ—å
-    *
-    * @columnName åˆ—å
-    */
-    public static void getResultByVersion(String tableName, String rowKey,
-                                          String familyName, String columnName) throws IOException {
-        HTable table = new HTable(conf, Bytes.toBytes(tableName));
-        Get get = new Get(Bytes.toBytes(rowKey));
-        get.addColumn(Bytes.toBytes(familyName), Bytes.toBytes(columnName));
-        get.setMaxVersions(5);
-        Result result = table.get(get);
-        for (KeyValue kv : result.list()) {
-            System.out.println("family:" + Bytes.toString(kv.getFamily()));
-            System.out
-                    .println("qualifier:" + Bytes.toString(kv.getQualifier()));
-            System.out.println("value:" + Bytes.toString(kv.getValue()));
-            System.out.println("Timestamp:" + kv.getTimestamp());
-            System.out.println("-------------------------------------------");
-        }
-        /*
-         * List<?> results = table.get(get).list(); Iterator<?> it =
-         * results.iterator(); while (it.hasNext()) {
-         * System.out.println(it.next().toString()); }
-         */
-    }
-
-    public List<Student> getDatasFromHbase(final List<String> rowKeys,
-                                           final List<String> filterColumn, boolean isContiansRowkeys,
-                                           boolean isContainsList) {
-        if (rowKeys == null || rowKeys.size() <= 0) {
-            return new ArrayList<>();
-        }
-        final int maxRowKeySize = 1000;
-        int loopSize = rowKeys.size() % maxRowKeySize == 0 ? rowKeys.size()
-                / maxRowKeySize : rowKeys.size() / maxRowKeySize + 1;
-        ArrayList<Future<List<Student>>> results = new ArrayList<Future<List<Student>>>();
-        for (int loop = 0; loop < loopSize; loop++) {
-            int end = (loop + 1) * maxRowKeySize > rowKeys.size() ? rowKeys
-                    .size() : (loop + 1) * maxRowKeySize;
-            List<String> partRowKeys = rowKeys.subList(loop * maxRowKeySize,
-                    end);
-            HbaseDataGetter hbaseDataGetter = new HbaseDataGetter(partRowKeys,
-                    filterColumn, isContiansRowkeys, isContainsList);
-            synchronized (pool) {
-                Future<List<Student>> result = pool.submit(hbaseDataGetter);
-                results.add(result);
+            // »ñÈ¡È¡³öµÄrow keyµÄGET¶ÔÏó
+            List<Get> getList = getList(rowList);
+            Result[] results = table.get(getList);
+            // ±éÀú½á¹û
+            for (Result result : results) {
+                Map<byte[], byte[]> fmap = packFamilyMap(result);
+                Map<String, String> rmap = packRowMap(fmap);
+                mapList.add(rmap);
             }
-        }
 
-        List<Student> students = new ArrayList<Student>();
-        try {
-            for (Future<List<Student>> result : results) {
-                List<Student> rd = result.get();
-                students.addAll(rd);
-            }
-        } catch (InterruptedException | ExecutionException e) {
+            // ·â×°·ÖÒ³¶ÔÏó
+            tbData = new TBData();
+            tbData.setCurrentPage(currentPage);
+            tbData.setPageSize(pageSize);
+            tbData.setTotalCount(i);
+            tbData.setTotalPage(getTotalPage(pageSize, i));
+            tbData.setResultList(mapList);
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            closeScanner(scanner);
         }
-        return students;
+
+        return tbData;
     }
 
+    private static int getTotalPage(int pageSize, int totalCount) {
+        int n = totalCount / pageSize;
+        if (totalCount % pageSize == 0) {
+            return n;
+        } else {
+            return ((int) n) + 1;
+        }
+    }
 
+    // »ñÈ¡É¨ÃèÆ÷¶ÔÏó
+    private static Scan getScan(String startRow, String stopRow) {
+        Scan scan = new Scan();
+        scan.setStartRow(getBytes(startRow));
+        scan.setStopRow(getBytes(stopRow));
+
+        return scan;
+    }
+
+    /**
+     * ·â×°²éÑ¯Ìõ¼ş
+     */
+    private static FilterList packageFilters(boolean isPage) {
+        FilterList filterList = null;
+        // MUST_PASS_ALL(Ìõ¼ş AND) MUST_PASS_ONE£¨Ìõ¼şOR£©
+        filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+        Filter filter1 = null;
+        Filter filter2 = null;
+        filter1 = newFilter(getBytes("family1"), getBytes("column1"),
+                CompareOp.EQUAL, getBytes("condition1"));
+        filter2 = newFilter(getBytes("family2"), getBytes("column1"),
+                CompareOp.LESS, getBytes("condition2"));
+        filterList.addFilter(filter1);
+        filterList.addFilter(filter2);
+        if (isPage) {
+            filterList.addFilter(new FirstKeyOnlyFilter());
+        }
+        return filterList;
+    }
+
+    private static Filter newFilter(byte[] f, byte[] c, CompareOp op, byte[] v) {
+        return new SingleColumnValueFilter(f, c, op, v);
+    }
+
+    private static void closeScanner(ResultScanner scanner) {
+        if (scanner != null)
+            scanner.close();
+    }
+
+    /**
+     * ·â×°Ã¿ĞĞÊı¾İ
+     */
+    private static Map<String, String> packRowMap(Map<byte[], byte[]> dataMap) {
+        Map<String, String> map = new LinkedHashMap<String, String>();
+
+        for (byte[] key : dataMap.keySet()) {
+
+            byte[] value = dataMap.get(key);
+
+            map.put(toStr(key), toStr(value));
+
+        }
+        return map;
+    }
+
+    /* ¸ù¾İROW KEY¼¯ºÏ»ñÈ¡GET¶ÔÏó¼¯ºÏ */
+    private static List<Get> getList(List<byte[]> rowList) {
+        List<Get> list = new LinkedList<Get>();
+        for (byte[] row : rowList) {
+            Get get = new Get(row);
+
+            get.addColumn(getBytes("family1"), getBytes("column1"));
+            get.addColumn(getBytes("family1"), getBytes("column2"));
+            get.addColumn(getBytes("family2"), getBytes("column1"));
+            list.add(get);
+        }
+        return list;
+    }
+
+    /**
+     * ·â×°ÅäÖÃµÄËùÓĞ×Ö¶ÎÁĞ×å
+     */
+    private static Map<byte[], byte[]> packFamilyMap(Result result) {
+        Map<byte[], byte[]> dataMap = null;
+        dataMap = new LinkedHashMap<byte[], byte[]>();
+        dataMap.putAll(result.getFamilyMap(getBytes("family1")));
+        dataMap.putAll(result.getFamilyMap(getBytes("family2")));
+        return dataMap;
+    }
+
+    private static String toStr(byte[] bt) {
+        return Bytes.toString(bt);
+    }
+
+    public static void main(String[] args) throws IOException {
+        // ÄÃ³örow keyµÄÆğÊ¼ĞĞºÍ½áÊøĞĞ
+        // #<0<9<:
+        String startRow = "aaaa#";
+        String stopRow = "aaaa:";
+        int currentPage = 1;
+        int pageSize = 20;
+        // Ö´ĞĞhbase²éÑ¯
+        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
+
+
+        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
+
+
+        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
+
+    }
+}
+
+class TBData {
+    private Integer currentPage;
+    private Integer pageSize;
+    private Integer totalCount;
+    private Integer totalPage;
+    private List<Map<String, String>> resultList;
+
+    public Integer getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(Integer currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public Integer getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(Integer totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public Integer getTotalPage() {
+        return totalPage;
+    }
+
+    public void setTotalPage(Integer totalPage) {
+        this.totalPage = totalPage;
+    }
+
+    public List<Map<String, String>> getResultList() {
+        return resultList;
+    }
+
+    public void setResultList(List<Map<String, String>> resultList) {
+        this.resultList = resultList;
+    }
+
+    @Override
+    public String toString() {
+        return "TBData{" +
+                "currentPage=" + currentPage +
+                ", pageSize=" + pageSize +
+                ", totalCount=" + totalCount +
+                ", totalPage=" + totalPage +
+                ", resultList=" + resultList +
+                '}';
+    }
 }

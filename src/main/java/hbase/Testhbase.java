@@ -1,6 +1,8 @@
 package hbase;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.*;
@@ -54,6 +56,13 @@ public class Testhbase {
             System.out.print(new String(kv.getQualifier()) + " ");
             System.out.print(kv.getTimestamp() + " ");
             System.out.println(new String(kv.getValue()));
+        }
+        for(Cell cell:rs.rawCells()){
+            System.out.println("RowName:"+new String(CellUtil.cloneRow(cell))+" ");
+            System.out.println("Timetamp:"+cell.getTimestamp()+" ");
+            System.out.println("column Family:"+new String(CellUtil.cloneFamily(cell))+" ");
+            System.out.println("row Name:"+new String(CellUtil.cloneQualifier(cell))+" ");
+            System.out.println("value:"+new String(CellUtil.cloneValue(cell))+" ");
         }
         table2.close();
 
