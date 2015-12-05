@@ -45,9 +45,9 @@ public class HbaseDataGetter implements Callable<List<Student>> {
     }
 
     private Object[] getDatasFromHbase(List<String> rowKeys, List<String> filterColumn) {
-        createTable(tableName);
+        getTable(tableName);
         Object[] objects = null;
-        HTableInterface hTableInterface = createTable(tableName);
+        HTableInterface hTableInterface = getTable(tableName);
         List<Get> listGets = new ArrayList<Get>();
         for (String rk : rowKeys) {
             Get get = new Get(Bytes.toBytes(rk));
@@ -78,7 +78,7 @@ public class HbaseDataGetter implements Callable<List<Student>> {
         return new Student();
     }
 
-    private HTableInterface createTable(String tableName) {
+    private HTableInterface getTable(String tableName) {
         HTable table = null;
         Configuration conf = HBaseConfiguration.create();
         try {
