@@ -121,12 +121,12 @@ public class AtmoUpdate {
 
         try {
             set.put("set", "010"); // {"set":"Neal Stephenson"}
-            inc.put("inc", "王五"); //{"inc":3}
-            add.put("add", "lily"); //{"add":"Cyberpunk"}
+//            inc.put("inc", "王五"); //{"inc":3}
+//            add.put("add", "lily"); //{"add":"Cyberpunk"}
             json.put("key", "442161045,00AJ0003|577616,http://ent.163.com/photoview/00AJ0003/577616.html");
             json.put("id", set);
-            json.put("editor", inc);
-            json.put("editor_3g", add);
+//            json.put("editor", inc);
+//            json.put("editor_3g", add);
             content.add(json);
             System.out.println(content);
             System.out.println(json);
