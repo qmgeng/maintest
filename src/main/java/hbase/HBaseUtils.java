@@ -1,299 +1,299 @@
-package hbase;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.*;
-import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
-import org.apache.hadoop.hbase.filter.Filter;
-import org.apache.hadoop.hbase.filter.FilterList;
-import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
-import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
-import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.security.UserGroupInformation;
-
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-public class HbaseUtils {
-    private static Configuration config = null;
-    private static HTablePool tp = null;
-    // ×Ô¶¯¼ÓÔØhbase-site.xml
-    static Configuration conf = HBaseConfiguration.create();
-
-    static {
-        // Ê¹ÓÃkeytabµÇÂ½
-        UserGroupInformation.setConfiguration(conf);
-        try {
-            UserGroupInformation.loginUserFromKeytab("weblog/dev@HADOOP.HZ.NETEASE.COM", "/home/weblog/weblog.keytab");
-            // ¶¨Ê±µ÷ÓÃ¸üÐÂkerberos£¨10Ð¡Ê±¹ýÆÚ£©£¬ÍÆ¼öÓÃÊØ»¤Ïß³Ì¶¨ÆÚµ÷ÓÃ
-            UserGroupInformation.getCurrentUser().reloginFromKeytab();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-     * »ñÈ¡hbaseµÄ±í
-     */
-    public static HTableInterface getTable(String tableName) {
-
-        if (StringUtils.isEmpty(tableName))
-            return null;
-
-        return tp.getTable(getBytes(tableName));
-    }
-
-    /* ×ª»»byteÊý×é */
-    public static byte[] getBytes(String str) {
-        if (str == null)
-            str = "";
-
-        return Bytes.toBytes(str);
-    }
-
-    /**
-     * ²éÑ¯Êý¾Ý
-     */
-    public static TBData getDataMap(String tableName, String startRow,
-                                    String stopRow, Integer currentPage, Integer pageSize)
-            throws IOException {
-        List<Map<String, String>> mapList = null;
-        mapList = new LinkedList<Map<String, String>>();
-
-        ResultScanner scanner = null;
-        // Îª·ÖÒ³´´½¨µÄ·â×°Àà¶ÔÏó£¬ÏÂÃæÓÐ¸ø³ö¾ßÌåÊôÐÔ
-        TBData tbData = null;
-        try {
-            // »ñÈ¡×î´ó·µ»Ø½á¹ûÊýÁ¿
-            if (pageSize == null || pageSize == 0L)
-                pageSize = 100;
-
-            if (currentPage == null || currentPage == 0)
-                currentPage = 1;
-
-            // ¼ÆËãÆðÊ¼Ò³ºÍ½áÊøÒ³
-            Integer firstPage = (currentPage - 1) * pageSize;
-
-            Integer endPage = firstPage + pageSize;
-
-            // ´Ó±í³ØÖÐÈ¡³öHBASE±í¶ÔÏó
-            HTableInterface table = getTable(tableName);
-            // »ñÈ¡É¸Ñ¡¶ÔÏó
-            Scan scan = getScan(startRow, stopRow);
-            // ¸øÉ¸Ñ¡¶ÔÏó·ÅÈë¹ýÂËÆ÷(true±êÊ¶·ÖÒ³,¾ßÌå·½·¨ÔÚÏÂÃæ)
-            scan.setFilter(packageFilters(true));
-            // »º´æ1000ÌõÊý¾Ý
-            scan.setCaching(1000);
-            scan.setCacheBlocks(false);
-            scanner = table.getScanner(scan);
-            int i = 0;
-            List<byte[]> rowList = new LinkedList<byte[]>();
-            // ±éÀúÉ¨ÃèÆ÷¶ÔÏó£¬ ²¢½«ÐèÒª²éÑ¯³öÀ´µÄÊý¾Ýrow keyÈ¡³ö
-            for (Result result : scanner) {
-                String row = toStr(result.getRow());
-                if (i >= firstPage && i < endPage) {
-                    rowList.add(getBytes(row));
-                }
-                i++;
-            }
-
-            // »ñÈ¡È¡³öµÄrow keyµÄGET¶ÔÏó
-            List<Get> getList = getList(rowList);
-            Result[] results = table.get(getList);
-            // ±éÀú½á¹û
-            for (Result result : results) {
-                Map<byte[], byte[]> fmap = packFamilyMap(result);
-                Map<String, String> rmap = packRowMap(fmap);
-                mapList.add(rmap);
-            }
-
-            // ·â×°·ÖÒ³¶ÔÏó
-            tbData = new TBData();
-            tbData.setCurrentPage(currentPage);
-            tbData.setPageSize(pageSize);
-            tbData.setTotalCount(i);
-            tbData.setTotalPage(getTotalPage(pageSize, i));
-            tbData.setResultList(mapList);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            closeScanner(scanner);
-        }
-
-        return tbData;
-    }
-
-    private static int getTotalPage(int pageSize, int totalCount) {
-        int n = totalCount / pageSize;
-        if (totalCount % pageSize == 0) {
-            return n;
-        } else {
-            return ((int) n) + 1;
-        }
-    }
-
-    // »ñÈ¡É¨ÃèÆ÷¶ÔÏó
-    private static Scan getScan(String startRow, String stopRow) {
-        Scan scan = new Scan();
-        scan.setStartRow(getBytes(startRow));
-        scan.setStopRow(getBytes(stopRow));
-
-        return scan;
-    }
-
-    /**
-     * ·â×°²éÑ¯Ìõ¼þ
-     */
-    private static FilterList packageFilters(boolean isPage) {
-        FilterList filterList = null;
-        // MUST_PASS_ALL(Ìõ¼þ AND) MUST_PASS_ONE£¨Ìõ¼þOR£©
-        filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
-        Filter filter1 = null;
-        Filter filter2 = null;
-        filter1 = newFilter(getBytes("family1"), getBytes("column1"),
-                CompareOp.EQUAL, getBytes("condition1"));
-        filter2 = newFilter(getBytes("family2"), getBytes("column1"),
-                CompareOp.LESS, getBytes("condition2"));
-        filterList.addFilter(filter1);
-        filterList.addFilter(filter2);
-        if (isPage) {
-            filterList.addFilter(new FirstKeyOnlyFilter());
-        }
-        return filterList;
-    }
-
-    private static Filter newFilter(byte[] f, byte[] c, CompareOp op, byte[] v) {
-        return new SingleColumnValueFilter(f, c, op, v);
-    }
-
-    private static void closeScanner(ResultScanner scanner) {
-        if (scanner != null)
-            scanner.close();
-    }
-
-    /**
-     * ·â×°Ã¿ÐÐÊý¾Ý
-     */
-    private static Map<String, String> packRowMap(Map<byte[], byte[]> dataMap) {
-        Map<String, String> map = new LinkedHashMap<String, String>();
-
-        for (byte[] key : dataMap.keySet()) {
-
-            byte[] value = dataMap.get(key);
-
-            map.put(toStr(key), toStr(value));
-
-        }
-        return map;
-    }
-
-    /* ¸ù¾ÝROW KEY¼¯ºÏ»ñÈ¡GET¶ÔÏó¼¯ºÏ */
-    private static List<Get> getList(List<byte[]> rowList) {
-        List<Get> list = new LinkedList<Get>();
-        for (byte[] row : rowList) {
-            Get get = new Get(row);
-
-            get.addColumn(getBytes("family1"), getBytes("column1"));
-            get.addColumn(getBytes("family1"), getBytes("column2"));
-            get.addColumn(getBytes("family2"), getBytes("column1"));
-            list.add(get);
-        }
-        return list;
-    }
-
-    /**
-     * ·â×°ÅäÖÃµÄËùÓÐ×Ö¶ÎÁÐ×å
-     */
-    private static Map<byte[], byte[]> packFamilyMap(Result result) {
-        Map<byte[], byte[]> dataMap = null;
-        dataMap = new LinkedHashMap<byte[], byte[]>();
-        dataMap.putAll(result.getFamilyMap(getBytes("family1")));
-        dataMap.putAll(result.getFamilyMap(getBytes("family2")));
-        return dataMap;
-    }
-
-    private static String toStr(byte[] bt) {
-        return Bytes.toString(bt);
-    }
-
-    public static void main(String[] args) throws IOException {
-        // ÄÃ³örow keyµÄÆðÊ¼ÐÐºÍ½áÊøÐÐ
-        // #<0<9<:
-        String startRow = "aaaa#";
-        String stopRow = "aaaa:";
-        int currentPage = 1;
-        int pageSize = 20;
-        // Ö´ÐÐhbase²éÑ¯
-        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
-
-
-        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
-
-
-        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
-
-    }
-}
-
-class TBData {
-    private Integer currentPage;
-    private Integer pageSize;
-    private Integer totalCount;
-    private Integer totalPage;
-    private List<Map<String, String>> resultList;
-
-    public Integer getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(Integer currentPage) {
-        this.currentPage = currentPage;
-    }
-
-    public Integer getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public Integer getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(Integer totalCount) {
-        this.totalCount = totalCount;
-    }
-
-    public Integer getTotalPage() {
-        return totalPage;
-    }
-
-    public void setTotalPage(Integer totalPage) {
-        this.totalPage = totalPage;
-    }
-
-    public List<Map<String, String>> getResultList() {
-        return resultList;
-    }
-
-    public void setResultList(List<Map<String, String>> resultList) {
-        this.resultList = resultList;
-    }
-
-    @Override
-    public String toString() {
-        return "TBData{" +
-                "currentPage=" + currentPage +
-                ", pageSize=" + pageSize +
-                ", totalCount=" + totalCount +
-                ", totalPage=" + totalPage +
-                ", resultList=" + resultList +
-                '}';
-    }
-}
+//package hbase;
+//
+//import org.apache.commons.lang.StringUtils;
+//import org.apache.hadoop.conf.Configuration;
+//import org.apache.hadoop.hbase.HBaseConfiguration;
+//import org.apache.hadoop.hbase.client.*;
+//import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+//import org.apache.hadoop.hbase.filter.Filter;
+//import org.apache.hadoop.hbase.filter.FilterList;
+//import org.apache.hadoop.hbase.filter.FirstKeyOnlyFilter;
+//import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
+//import org.apache.hadoop.hbase.util.Bytes;
+//import org.apache.hadoop.security.UserGroupInformation;
+//
+//import java.io.IOException;
+//import java.util.LinkedHashMap;
+//import java.util.LinkedList;
+//import java.util.List;
+//import java.util.Map;
+//
+//public class HbaseUtils {
+//    private static Configuration config = null;
+//    private static HTablePool tp = null;
+//    // ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½hbase-site.xml
+//    static Configuration conf = HBaseConfiguration.create();
+//
+//    static {
+//        // Ê¹ï¿½ï¿½keytabï¿½ï¿½Â½
+//        UserGroupInformation.setConfiguration(conf);
+//        try {
+//            UserGroupInformation.loginUserFromKeytab("weblog/dev@HADOOP.HZ.NETEASE.COM", "/home/weblog/weblog.keytab");
+//            // ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ã¸ï¿½ï¿½ï¿½kerberosï¿½ï¿½10Ð¡Ê±ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ß³Ì¶ï¿½ï¿½Úµï¿½ï¿½ï¿½
+//            UserGroupInformation.getCurrentUser().reloginFromKeytab();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    /*
+//     * ï¿½ï¿½È¡hbaseï¿½Ä±ï¿½
+//     */
+//    public static HTableInterface getTable(String tableName) {
+//
+//        if (StringUtils.isEmpty(tableName))
+//            return null;
+//
+//        return tp.getTable(getBytes(tableName));
+//    }
+//
+//    /* ×ªï¿½ï¿½byteï¿½ï¿½ï¿½ï¿½ */
+//    public static byte[] getBytes(String str) {
+//        if (str == null)
+//            str = "";
+//
+//        return Bytes.toBytes(str);
+//    }
+//
+//    /**
+//     * ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
+//     */
+//    public static TBData getDataMap(String tableName, String startRow,
+//                                    String stopRow, Integer currentPage, Integer pageSize)
+//            throws IOException {
+//        List<Map<String, String>> mapList = null;
+//        mapList = new LinkedList<Map<String, String>>();
+//
+//        ResultScanner scanner = null;
+//        // Îªï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//        TBData tbData = null;
+//        try {
+//            // ï¿½ï¿½È¡ï¿½ï¿½ó·µ»Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//            if (pageSize == null || pageSize == 0L)
+//                pageSize = 100;
+//
+//            if (currentPage == null || currentPage == 0)
+//                currentPage = 1;
+//
+//            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼Ò³ï¿½Í½ï¿½ï¿½ï¿½Ò³
+//            Integer firstPage = (currentPage - 1) * pageSize;
+//
+//            Integer endPage = firstPage + pageSize;
+//
+//            // ï¿½Ó±ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½HBASEï¿½ï¿½ï¿½ï¿½ï¿½
+//            HTableInterface table = getTable(tableName);
+//            // ï¿½ï¿½È¡É¸Ñ¡ï¿½ï¿½ï¿½ï¿½
+//            Scan scan = getScan(startRow, stopRow);
+//            // ï¿½ï¿½É¸Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(trueï¿½ï¿½Ê¶ï¿½ï¿½Ò³,ï¿½ï¿½ï¿½å·½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+//            scan.setFilter(packageFilters(true));
+//            // ï¿½ï¿½ï¿½ï¿½1000ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//            scan.setCaching(1000);
+//            scan.setCacheBlocks(false);
+//            scanner = table.getScanner(scan);
+//            int i = 0;
+//            List<byte[]> rowList = new LinkedList<byte[]>();
+//            // ï¿½ï¿½ï¿½ï¿½É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½row keyÈ¡ï¿½ï¿½
+//            for (Result result : scanner) {
+//                String row = toStr(result.getRow());
+//                if (i >= firstPage && i < endPage) {
+//                    rowList.add(getBytes(row));
+//                }
+//                i++;
+//            }
+//
+//            // ï¿½ï¿½È¡È¡ï¿½ï¿½ï¿½ï¿½row keyï¿½ï¿½GETï¿½ï¿½ï¿½ï¿½
+//            List<Get> getList = getList(rowList);
+//            Result[] results = table.get(getList);
+//            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//            for (Result result : results) {
+//                Map<byte[], byte[]> fmap = packFamilyMap(result);
+//                Map<String, String> rmap = packRowMap(fmap);
+//                mapList.add(rmap);
+//            }
+//
+//            // ï¿½ï¿½×°ï¿½ï¿½Ò³ï¿½ï¿½ï¿½ï¿½
+//            tbData = new TBData();
+//            tbData.setCurrentPage(currentPage);
+//            tbData.setPageSize(pageSize);
+//            tbData.setTotalCount(i);
+//            tbData.setTotalPage(getTotalPage(pageSize, i));
+//            tbData.setResultList(mapList);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            closeScanner(scanner);
+//        }
+//
+//        return tbData;
+//    }
+//
+//    private static int getTotalPage(int pageSize, int totalCount) {
+//        int n = totalCount / pageSize;
+//        if (totalCount % pageSize == 0) {
+//            return n;
+//        } else {
+//            return ((int) n) + 1;
+//        }
+//    }
+//
+//    // ï¿½ï¿½È¡É¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//    private static Scan getScan(String startRow, String stopRow) {
+//        Scan scan = new Scan();
+//        scan.setStartRow(getBytes(startRow));
+//        scan.setStopRow(getBytes(stopRow));
+//
+//        return scan;
+//    }
+//
+//    /**
+//     * ï¿½ï¿½×°ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
+//     */
+//    private static FilterList packageFilters(boolean isPage) {
+//        FilterList filterList = null;
+//        // MUST_PASS_ALL(ï¿½ï¿½ï¿½ï¿½ AND) MUST_PASS_ONEï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ORï¿½ï¿½
+//        filterList = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+//        Filter filter1 = null;
+//        Filter filter2 = null;
+//        filter1 = newFilter(getBytes("family1"), getBytes("column1"),
+//                CompareOp.EQUAL, getBytes("condition1"));
+//        filter2 = newFilter(getBytes("family2"), getBytes("column1"),
+//                CompareOp.LESS, getBytes("condition2"));
+//        filterList.addFilter(filter1);
+//        filterList.addFilter(filter2);
+//        if (isPage) {
+//            filterList.addFilter(new FirstKeyOnlyFilter());
+//        }
+//        return filterList;
+//    }
+//
+//    private static Filter newFilter(byte[] f, byte[] c, CompareOp op, byte[] v) {
+//        return new SingleColumnValueFilter(f, c, op, v);
+//    }
+//
+//    private static void closeScanner(ResultScanner scanner) {
+//        if (scanner != null)
+//            scanner.close();
+//    }
+//
+//    /**
+//     * ï¿½ï¿½×°Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//     */
+//    private static Map<String, String> packRowMap(Map<byte[], byte[]> dataMap) {
+//        Map<String, String> map = new LinkedHashMap<String, String>();
+//
+//        for (byte[] key : dataMap.keySet()) {
+//
+//            byte[] value = dataMap.get(key);
+//
+//            map.put(toStr(key), toStr(value));
+//
+//        }
+//        return map;
+//    }
+//
+//    /* ï¿½ï¿½ï¿½ï¿½ROW KEYï¿½ï¿½ï¿½Ï»ï¿½È¡GETï¿½ï¿½ï¿½ó¼¯ºï¿½ */
+//    private static List<Get> getList(List<byte[]> rowList) {
+//        List<Get> list = new LinkedList<Get>();
+//        for (byte[] row : rowList) {
+//            Get get = new Get(row);
+//
+//            get.addColumn(getBytes("family1"), getBytes("column1"));
+//            get.addColumn(getBytes("family1"), getBytes("column2"));
+//            get.addColumn(getBytes("family2"), getBytes("column1"));
+//            list.add(get);
+//        }
+//        return list;
+//    }
+//
+//    /**
+//     * ï¿½ï¿½×°ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½
+//     */
+//    private static Map<byte[], byte[]> packFamilyMap(Result result) {
+//        Map<byte[], byte[]> dataMap = null;
+//        dataMap = new LinkedHashMap<byte[], byte[]>();
+//        dataMap.putAll(result.getFamilyMap(getBytes("family1")));
+//        dataMap.putAll(result.getFamilyMap(getBytes("family2")));
+//        return dataMap;
+//    }
+//
+//    private static String toStr(byte[] bt) {
+//        return Bytes.toString(bt);
+//    }
+//
+//    public static void main(String[] args) throws IOException {
+//        // ï¿½Ã³ï¿½row keyï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ÐºÍ½ï¿½ï¿½ï¿½ï¿½ï¿½
+//        // #<0<9<:
+//        String startRow = "aaaa#";
+//        String stopRow = "aaaa:";
+//        int currentPage = 1;
+//        int pageSize = 20;
+//        // Ö´ï¿½ï¿½hbaseï¿½ï¿½Ñ¯
+//        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
+//
+//
+//        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
+//
+//
+//        System.out.println(getDataMap("datacube:evaluation", startRow, stopRow, currentPage, pageSize));
+//
+//    }
+//}
+//
+//class TBData {
+//    private Integer currentPage;
+//    private Integer pageSize;
+//    private Integer totalCount;
+//    private Integer totalPage;
+//    private List<Map<String, String>> resultList;
+//
+//    public Integer getCurrentPage() {
+//        return currentPage;
+//    }
+//
+//    public void setCurrentPage(Integer currentPage) {
+//        this.currentPage = currentPage;
+//    }
+//
+//    public Integer getPageSize() {
+//        return pageSize;
+//    }
+//
+//    public void setPageSize(Integer pageSize) {
+//        this.pageSize = pageSize;
+//    }
+//
+//    public Integer getTotalCount() {
+//        return totalCount;
+//    }
+//
+//    public void setTotalCount(Integer totalCount) {
+//        this.totalCount = totalCount;
+//    }
+//
+//    public Integer getTotalPage() {
+//        return totalPage;
+//    }
+//
+//    public void setTotalPage(Integer totalPage) {
+//        this.totalPage = totalPage;
+//    }
+//
+//    public List<Map<String, String>> getResultList() {
+//        return resultList;
+//    }
+//
+//    public void setResultList(List<Map<String, String>> resultList) {
+//        this.resultList = resultList;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "TBData{" +
+//                "currentPage=" + currentPage +
+//                ", pageSize=" + pageSize +
+//                ", totalCount=" + totalCount +
+//                ", totalPage=" + totalPage +
+//                ", resultList=" + resultList +
+//                '}';
+//    }
+//}

@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 /**
  * Created by qmgeng on 15/12/5.
  */
-public class DataReaderServer {
+public class BatchHbaseScan {
     //获取店铺一天内各分钟PV值的入口函数
     public static ConcurrentHashMap<String, String> getUnitMinutePV(long uid, long startStamp, long endStamp) {
         long min = startStamp;
@@ -58,7 +58,7 @@ public class DataReaderServer {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(lstBatchKeys.size(), factory);
 
         for (List<String> keys : lstBatchKeys) {
-            Callable<ConcurrentHashMap<String, String>> callable = new BatchMinutePVCallable(keys);
+            Callable<ConcurrentHashMap<String, String>> callable = new HbaseDataScanner(keys);
             FutureTask<ConcurrentHashMap<String, String>> future = (FutureTask<ConcurrentHashMap<String, String>>) executor.submit(callable);
             futures.add(future);
         }
@@ -110,10 +110,10 @@ public class DataReaderServer {
 }
 
 //调用接口类，实现Callable接口
-class BatchMinutePVCallable implements Callable<ConcurrentHashMap<String, String>> {
+class HbaseDataScanner implements Callable<ConcurrentHashMap<String, String>> {
     private List<String> keys;
 
-    public BatchMinutePVCallable(List<String> lstKeys) {
+    public HbaseDataScanner(List<String> lstKeys) {
         this.keys = lstKeys;
     }
 
