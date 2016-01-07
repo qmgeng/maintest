@@ -90,6 +90,7 @@ public final class ReadJsonTestTweetsBuilder implements CommandBuilder {
         @Override
         protected boolean doProcess(Record record, InputStream in) throws IOException {
             String name = (String) record.getFirstValue(Fields.ATTACHMENT_NAME);
+            LOG.debug("ATTACHMENT_NAME->"+name);
             if (name != null && name.endsWith(".gz")) {
                 in = new GZIPInputStream(in, 64 * 1024);
             }
@@ -107,6 +108,7 @@ public final class ReadJsonTestTweetsBuilder implements CommandBuilder {
                     JsonNode rootNode;
                     if (isLengthDelimited) {
                         String json = nextLine(bufferedReader);
+                        LOG.debug("JSON_NAME->" + json);
                         if (json == null) {
                             break;
                         }

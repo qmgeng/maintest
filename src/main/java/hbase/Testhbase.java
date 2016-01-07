@@ -45,19 +45,43 @@ public class Testhbase {
          table.put(put);
          table.close();
 
+        //测试scan
+        Scan scan = new Scan();
+        scan.setCaching(1000);
+        scan.setCacheBlocks(false);
+        scan.setStartRow(Bytes.toBytes("859244340,BAQGPAH800073SD3,http://bj.house.163.com/15/1214/17/BAQGPAH800073SD3.html,20151212"));
+        scan.setStopRow(Bytes.toBytes("859244340,BAQGPAH800073SD3,http://bj.house.163.com/15/1214/17/BAQGPAH800073SD3.html,20151229"));
+        ResultScanner rs = null;
+        HTable tablex = new HTable(conf, Bytes.toBytes("datacube:evaluation"));
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        try {
+            rs = tablex.getScanner(scan);
+            for (Result r : rs) {
+                for(Cell cell:r.rawCells()){
+                    System.out.println("RowName:"+new String(CellUtil.cloneRow(cell))+" ");
+                    System.out.println("Timetamp:"+cell.getTimestamp()+" ");
+                    System.out.println("column Family:"+new String(CellUtil.cloneFamily(cell))+" ");
+                    System.out.println("row Name:"+new String(CellUtil.cloneQualifier(cell))+" ");
+                    System.out.println("value:"+new String(CellUtil.cloneValue(cell))+" ");
+                }
+            }
+        } finally {
+            rs.close();
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        }
 
         // 测试get
         HTable table2 = new HTable(conf, "datacube:kpidata");
         Get get = new Get("pro1_url1_20151101".getBytes());
-        Result rs = table2.get(get);
-        for (KeyValue kv : rs.raw()) {
+        Result rs2 = table2.get(get);
+        for (KeyValue kv : rs2.raw()) {
             System.out.print(new String(kv.getRow()) + " ");
             System.out.print(new String(kv.getFamily()) + ":");
             System.out.print(new String(kv.getQualifier()) + " ");
             System.out.print(kv.getTimestamp() + " ");
             System.out.println(new String(kv.getValue()));
         }
-        for(Cell cell:rs.rawCells()){
+        for(Cell cell:rs2.rawCells()){
             System.out.println("RowName:"+new String(CellUtil.cloneRow(cell))+" ");
             System.out.println("Timetamp:"+cell.getTimestamp()+" ");
             System.out.println("column Family:"+new String(CellUtil.cloneFamily(cell))+" ");
