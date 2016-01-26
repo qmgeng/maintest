@@ -174,18 +174,18 @@
             <version>1.7.7</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-core</artifactId>
+            <groupId>org.apache.com.testjava.solr</groupId>
+            <artifactId>com.testjava.solr-core</artifactId>
             <version>5.3.1</version>
             <scope>system</scope>
-            <systemPath>${baselib}/lib/solr-core-5.3.1.jar</systemPath>
+            <systemPath>${baselib}/lib/com.testjava.solr-core-5.3.1.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-solrj</artifactId>
+            <groupId>org.apache.com.testjava.solr</groupId>
+            <artifactId>com.testjava.solr-solrj</artifactId>
             <version>5.3.1</version>
             <scope>system</scope>
-            <systemPath>${baselib}/lib/solr-solrj-5.3.1.jar</systemPath>
+            <systemPath>${baselib}/lib/com.testjava.solr-solrj-5.3.1.jar</systemPath>
         </dependency>
 -->
         <dependency>
